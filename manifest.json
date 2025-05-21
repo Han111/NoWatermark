@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Jimeng AI Watermark Remover",
+  "name": "AI Watermark Remover",
   "version": "1.0",
-  "description": "Remove watermarks from Jimeng AI generated images",
+  "description": "Remove watermarks from Jimeng AI and Doubao AI generated images",
   "action": {
     "default_popup": "popup.html"
   },
@@ -15,11 +15,12 @@
   ],
   "host_permissions": [
     "https://jimeng.jianying.com/*",
+    "https://www.doubao.com/*",
     "https://*.byteimg.com/*"
   ],
   "content_scripts": [
     {
-      "matches": ["https://jimeng.jianying.com/*"],
+      "matches": ["https://jimeng.jianying.com/*", "https://www.doubao.com/*"],
       "js": ["content.js"],
       "run_at": "document_end",
       "all_frames": true
@@ -28,7 +29,7 @@
   "web_accessible_resources": [
     {
       "resources": ["images/*"],
-      "matches": ["https://jimeng.jianying.com/*"]
+      "matches": ["https://jimeng.jianying.com/*", "https://www.doubao.com/*"]
     }
   ],
   "background": {

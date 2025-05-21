@@ -1,16 +1,16 @@
-// Background script for Jimeng AI Watermark Remover
+// Background script for AI Watermark Remover
 
 // Listen for installation
 chrome.runtime.onInstalled.addListener(function() {
-  console.log("即梦AI无水印下载工具已安装");
+  // Extension installed
 });
 
 // Listen for tab updates to enable/disable the extension icon
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
   if (changeInfo.status === 'complete') {
-    // Check if the current tab is on Jimeng AI website
-    if (tab.url && tab.url.includes('jimeng.jianying.com')) {
-      // Enable the action button for Jimeng AI website
+    // Check if the current tab is on supported websites
+    if (tab.url && (tab.url.includes('jimeng.jianying.com') || tab.url.includes('www.doubao.com'))) {
+      // Enable the action button for supported websites
       chrome.action.enable(tabId);
     } else {
       // Disable the action button for other websites
@@ -22,11 +22,12 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 // Listen for messages from content scripts or popup
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if (request.action === "checkStatus") {
-    // Check if the current tab is on Jimeng AI website
+    // Check if the current tab is on supported websites
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
       const currentTab = tabs[0];
-      const isOnJimengSite = currentTab && currentTab.url && currentTab.url.includes('jimeng.jianying.com');
-      sendResponse({isOnJimengSite: isOnJimengSite});
+      const isOnSupportedSite = currentTab && currentTab.url && 
+        (currentTab.url.includes('jimeng.jianying.com') || currentTab.url.includes('www.doubao.com'));
+      sendResponse({isOnSupportedSite: isOnSupportedSite});
     });
     return true; // Required for asynchronous response
   }
@@ -36,11 +37,10 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     try {
       chrome.downloads.download({
         url: request.imageUrl,
-        filename: request.filename || "jimeng_image.png",
+        filename: request.filename || "ai_image.png",
         saveAs: true
       }, function(downloadId) {
         if (chrome.runtime.lastError) {
-          console.error("下载错误:", chrome.runtime.lastError);
           sendResponse({success: false, error: chrome.runtime.lastError.message});
         } else {
           sendResponse({success: true, downloadId: downloadId});
@@ -48,7 +48,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       });
       return true; // Required for asynchronous response
     } catch (err) {
-      console.error("处理下载请求时出错:", err);
       sendResponse({success: false, error: err.message});
       return false;
     }
